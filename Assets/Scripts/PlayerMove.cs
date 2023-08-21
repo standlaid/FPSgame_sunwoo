@@ -13,7 +13,8 @@ using UnityEngine;
 //2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
 //2-3. 스페이스 키를 누르면 수직 속도에 점프 파워를 적용하고 싶다.
 
-//목적3. 점프 중인지 확인하고, 점프 중이면 점프 전 상태로 초기화 하고 싶다. 
+//목적3: 플레이어가 피격을 당하면 hp를 Damage만큼 깎는다.
+//필요속성3: hp
 
 public class PlayerMove : MonoBehaviour
 {
@@ -26,7 +27,10 @@ public class PlayerMove : MonoBehaviour
     public float yVelocity = 0;
     public float jumpPower = 10;
     public bool isJumping = false;
-    
+
+    //필요속성3: hp
+    public int hp = 10;
+
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -77,5 +81,11 @@ public class PlayerMove : MonoBehaviour
         //2-2. 캐릭터 컨트롤러로 나를 이동시키고 싶다.
         characterController.Move(dir * speed * Time.deltaTime);
 
+    }
+
+    //목적3: 플레이어가 피격을 당하면 hp를 Damage만큼 깎는다.
+    public void DamageAction(int damage)
+    {
+        hp -= damage;
     }
 }
