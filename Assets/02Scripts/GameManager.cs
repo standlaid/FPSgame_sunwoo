@@ -1,20 +1,30 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-//¸ñÀû: °ÔÀÓÀÇ »óÅÂ(Ready, Start, GameOver)¸¦ ±¸º°ÇÏ°í °ÔÀÓÀÇ ½ÃÀÛ°ú ³¡À» TextUI·Î Ç¥Çö ÇÏ°í½Í´Ù.
-//ÇÊ¿ä¼Ó¼º: °ÔÀÓ »óÅÂ ¿­°ÅÇü º¯¼ö, TextUI
+using UnityEngine.SceneManagement;
+//ëª©ì : ê²Œì„ì˜ ìƒíƒœ(Ready, Start, GameOver)ë¥¼ êµ¬ë³„í•˜ê³  ê²Œì„ì˜ ì‹œì‘ê³¼ ëì„ TextUIë¡œ í‘œí˜„ í•˜ê³ ì‹¶ë‹¤.
+//í•„ìš”ì†ì„±: ê²Œì„ ìƒíƒœ ì—´ê±°í˜• ë³€ìˆ˜, TextUI
 
-//¸ñÀû2: 2ÃÊ ÈÄ Ready »óÅÂ¿¡¼­ Start»óÅÂ·Î º¯°æµÇ¸ç °ÔÀÓÀÌ ½ÃÀÛµÈ´Ù.
+//ëª©ì 2: 2ì´ˆ í›„ Ready ìƒíƒœì—ì„œ Startìƒíƒœë¡œ ë³€ê²½ë˜ë©° ê²Œì„ì´ ì‹œì‘ëœë‹¤.
 
-//¸ñÀû3: ÇÃ·¹ÀÌ¾îÀÇ hp°¡ 0º¸´Ù ÀÛÀ¸¸é »óÅÂÅØ½ºÆ®¸¦ ¿Í »óÅÂ¸¦ GameOver·Î ¹Ù²ãÁØ´Ù.
-// ÇÊ¿ä¼Ó¼º: hp°¡ µé¾îÀÖ´Â playerMove
-//¸ñÀû4: ÇÃ·¹ÀÌ¾îÀÇ hp°¡ 0ÀÌÇÏ¶ó¸é ÇÃ·¹ÀÌ¾îÀÇ ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ¸ØÃß´Ù.
+//ëª©ì 3: í”Œë ˆì´ì–´ì˜ hpê°€ 0ë³´ë‹¤ ì‘ìœ¼ë©´ ìƒíƒœí…ìŠ¤íŠ¸ë¥¼ ì™€ ìƒíƒœë¥¼ GameOverë¡œ ë°”ê¿”ì¤€ë‹¤.
+// í•„ìš”ì†ì„±3: hpê°€ ë“¤ì–´ìˆëŠ” playerMove
+//ëª©ì 4: í”Œë ˆì´ì–´ì˜ hpê°€ 0ì´í•˜ë¼ë©´ í”Œë ˆì´ì–´ì˜ ì• ë‹ˆë©”ì´ì…˜ì„ ë©ˆì¶”ë‹¤.
+//í•„ìš”ì†ì„±4: í”Œë ˆì´ì–´ì˜ ì• ë‹ˆë©”ì´í„° ì»´í¬ë„ŒíŠ¸
+
+//ëª©ì 5: setting ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ Option UIê°€ ì¼œì§„ë‹¤. ë™ì‹œì— ê²Œì„ ì†ë„ë¥¼ ì¡°ì ˆí•œë‹¤. (0 or 1)
+//í•„ìš”ì†ì„±5: Option UI ê²Œì„ì˜¤ë¸Œì íŠ¸, ì¼ì‹œì •ì§€ ìƒíƒœ
+
+//ëª©ì 6: ê²Œì„ ì˜¤ë²„ì‹œ Retryì™€ Quit ë²„íŠ¼ì„ í™œì„±í™”í•œë‹¤.
+//
+
+
 public class GameManager : MonoBehaviour
 {
 
     public static GameManager Instance;
-    //ÇÊ¿ä¼Ó¼º: °ÔÀÓ »óÅÂ ¿­°ÅÇü º¯¼ö, TextUI
+    //í•„ìš”ì†ì„±: ê²Œì„ ìƒíƒœ ì—´ê±°í˜• ë³€ìˆ˜, TextUI
 
     public enum GameState
     {
@@ -26,9 +36,10 @@ public class GameManager : MonoBehaviour
     public GameState state = GameState.Ready;
     public TMP_Text stateText;
 
-    // ÇÊ¿ä¼Ó¼º: hp°¡ µé¾îÀÖ´Â playerMove
+    // í•„ìš”ì†ì„±: hpê°€ ë“¤ì–´ìˆëŠ” playerMove
     PlayerMove player;
-
+    EnemyFSM enemy;
+    //í•„ìš”ì†ì„±4: í”Œë ˆì´ì–´ì˜ ì• ë‹ˆë©”ì´í„° ì»´í¬ë„ŒíŠ¸
     Animator animator;
     private void Awake()
     {
@@ -37,6 +48,10 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
     }
+
+    //í•„ìš”ì†ì„±5: Option UI ê²Œì„ì˜¤ë¸Œì íŠ¸, ì¼ì‹œì •ì§€ ìƒíƒœ
+    public GameObject optionUI;
+
 
     // Start is called before the first frame update
     void Start()
@@ -47,21 +62,22 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GameStart());
 
         player = GameObject.Find("Player").GetComponent<PlayerMove>();
+        enemy = GameObject.FindWithTag("Enemy").GetComponent<EnemyFSM>();
 
         animator = player.GetComponentInChildren<Animator>();
 
 
     }
-    //¸ñÀû2: 2ÃÊ ÈÄ Ready »óÅÂ¿¡¼­ Start»óÅÂ·Î º¯°æµÇ¸ç °ÔÀÓÀÌ ½ÃÀÛµÈ´Ù.
+    //ëª©ì 2: 2ì´ˆ í›„ Ready ìƒíƒœì—ì„œ Startìƒíƒœë¡œ ë³€ê²½ë˜ë©° ê²Œì„ì´ ì‹œì‘ëœë‹¤.
     IEnumerator GameStart()
     {
-        //2ÃÊ¸¦ ±â´Ù¸°´Ù.
+        //2ì´ˆë¥¼ ê¸°ë‹¤ë¦°ë‹¤.
         yield return new WaitForSeconds(2);
 
         stateText.text = "Game Start";
         stateText.color = new Color32(0, 255, 0, 255);
 
-        //0ÃÊ¸¦ ±â´Ù¸°´Ù.
+        //0ì´ˆë¥¼ ê¸°ë‹¤ë¦°ë‹¤.
         yield return new WaitForSeconds(0.5f);
 
         stateText.gameObject.SetActive(false);
@@ -72,18 +88,30 @@ public class GameManager : MonoBehaviour
 
     void CheckGameOver()
     {
-        //¸ñÀû3: ÇÃ·¹ÀÌ¾îÀÇ hp°¡ 0º¸´Ù ÀÛÀ¸¸é »óÅÂÅØ½ºÆ®¸¦ ¿Í »óÅÂ¸¦ GameOver·Î ¹Ù²ãÁØ´Ù.
+        //ëª©ì 3: í”Œë ˆì´ì–´ì˜ hpê°€ 0ë³´ë‹¤ ì‘ìœ¼ë©´ ìƒíƒœí…ìŠ¤íŠ¸ë¥¼ ì™€ ìƒíƒœë¥¼ GameOverë¡œ ë°”ê¿”ì¤€ë‹¤.
         if(player.hp <= 0)
         {
-            //»óÅÂ ÅØ½ºÆ®ON
+            //ìƒíƒœ í…ìŠ¤íŠ¸ON
             stateText.gameObject.SetActive(true);
 
-            //»óÅÂ ÅØ½ºÆ®¸¦ GameOver·Î º¯°æ
+            //ìƒíƒœ í…ìŠ¤íŠ¸ë¥¼ GameOverë¡œ ë³€ê²½
             stateText.text = "Game Over";
 
             stateText.color = new Color32(255, 0, 0, 255);
 
+            //ëª©ì 6: ê²Œì„ ì˜¤ë²„ì‹œ Retryì™€ Quit ë²„íŠ¼ì„ í™œì„±í™”í•œë‹¤.
+            GameObject retryBtn = stateText.transform.GetChild(0).gameObject;
+            GameObject quitBtn = stateText.transform.GetChild(1).gameObject;
+            retryBtn.SetActive(true);
+            quitBtn.SetActive(true);
+
+            //ëª©ì 7: ê²Œì„ ì˜¤ë²„ì‹œ HPbarì™€ Weapon Mode Text ë¹„í™œì„±í™”
+            player.hpSlider.gameObject.SetActive(false);
+            player.GetComponent<PlayerFire>().weaponModeTxt.gameObject.SetActive(false);
+            enemy.hpSlider.gameObject.SetActive(false);
+            
             state = GameState.GameOver;
+
 
         }
 
@@ -94,4 +122,45 @@ public class GameManager : MonoBehaviour
     {
         CheckGameOver();
     }
+    //ëª©ì 5: setting ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ Option UIê°€ ì¼œì§„ë‹¤. ë™ì‹œì— ê²Œì„ ì†ë„ë¥¼ ì¡°ì ˆí•œë‹¤. (0 or 1)
+    //option í™”ë©´ ì¼œê¸°
+    public void OpenOptionWindow()
+    {
+        // Option UIê°€ ì¼œì§„ë‹¤.
+        optionUI.SetActive(true);
+
+        //ë™ì‹œì— ê²Œì„ ì†ë„ë¥¼ ì¡°ì ˆí•œë‹¤. (0 or 1)
+        Time.timeScale = 0;
+
+        //state = GameState.Pause;
+
+    }
+
+    //ê³„ì†í•˜ê¸°
+    public void CloseOptionWindow()
+    {
+        // Option UIê°€ ì¼œì§„ë‹¤.
+        optionUI.SetActive(false);
+
+        //ë™ì‹œì— ê²Œì„ ì†ë„ë¥¼ ì¡°ì ˆí•œë‹¤. (0 or 1)
+        Time.timeScale = 1;
+
+        state = GameState.Start;
+
+    }
+
+    public void Reset()
+    {
+        //ë™ì‹œì— ê²Œì„ ì†ë„ë¥¼ ì¡°ì ˆí•œë‹¤. (0 or 1)
+        Time.timeScale = 1;
+
+        //í˜„ì¬ ì”¬ ë²ˆí˜¸ë¥¼ ë‹¤ì‹œ ë¡œë“œ
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
 }

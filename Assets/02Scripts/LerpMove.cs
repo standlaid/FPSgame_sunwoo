@@ -21,6 +21,6 @@ public class LerpMove : MonoBehaviour
     {
         currentTime += Time.deltaTime;
 
-        transform.position = Vector3.Lerp(pointA.position, pointB.position, currentTime / duration);
+        //transform.position = Vector3.Lerp(pointA.position, pointB.position, currentTime / duration);
     }
 }
